@@ -2,9 +2,13 @@
   "name": "transcriber-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "type": "commonjs",
   "scripts": {
-    "start": "node index.js",
+    "dev": "npm run lint && npm run build && npm run start",
+    "start": "node ./dist/index.js",
+    "build": "tsc",
+    "lint": "tslint -c tslint.json -p tsconfig.json --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +19,16 @@
     "Matthieu Tran <matthieuktran@gmail.com>",
     "Huyen Nguyen <hn078722@gmail.com>"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^18.7.15",
+    "tslint": "^6.1.3",
+    "typescript": "^4.8.2"
+  },
+  "dependencies": {
+    "@types/isomorphic-fetch": "^0.0.36",
+    "dotenv": "^16.0.2",
+    "isomorphic-fetch": "^3.0.0",
+    "podcast-api": "^1.1.4"
+  }
 }
