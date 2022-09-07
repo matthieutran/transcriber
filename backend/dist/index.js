@@ -5,7 +5,7 @@ const ASSEMBLYAI_API_KEY = process.env.ASSEMBLYAI_API_KEY;
 const LISTEN_NOTES_API_KEY = process.env.LISTEN_NOTES_API_KEY;
 const LISTEN_NOTES_ENDPOINT = "https://listen-api-test.listennotes.com/api/v2";
 const ASSEMBLYAI_ENDPOINT = "https://api.assemblyai.com/v2";
-async function queryPodcasts(query) {
+async function searchPodcast(query) {
     if (LISTEN_NOTES_API_KEY === undefined) {
         throw new Error("ListenNotes API Key missing from .env file");
     }
@@ -17,7 +17,7 @@ async function queryPodcasts(query) {
     const podcasts = (await res.json());
     return podcasts;
 }
-async function queryTranscription(source) {
+async function queueAudio(source) {
     if (ASSEMBLYAI_API_KEY === undefined) {
         throw new Error("AssemblyAI API Key missing from .env file");
     }
@@ -31,15 +31,16 @@ async function queryTranscription(source) {
             audio_url: source,
         }),
     });
-    const submission = (await res.json());
-    const id = submission.id;
-    let status = submission.status;
-    let transcript = submission;
+    return (await res.json());
+}
+async function fetchTranscript(id) {
+    let status = "processing";
+    let transcript;
     return await new Promise((resolve) => {
         const intv = setInterval(async () => {
             transcript = await fetchTranscriptResult(id);
             status = transcript.status;
-            if (status !== "queued") {
+            if (status !== "processing") {
                 clearInterval(intv);
             }
             resolve(transcript);
@@ -60,10 +61,10 @@ async function fetchTranscriptResult(id) {
     return transcript;
 }
 async function main() {
-    const podcasts = await queryPodcasts("women%20in%20tech");
+    const podcasts = await searchPodcast("women%20in%20tech");
     const audio = podcasts.results[0].audio;
-    const transcript = await queryTranscription(audio);
-    console.log(transcript.id);
+    const submission = await queueAudio(audio);
+    const transcript = await fetchTranscript(submission.id);
 }
 main();
 //# sourceMappingURL=index.js.map

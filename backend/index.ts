@@ -9,7 +9,7 @@ const LISTEN_NOTES_API_KEY = process.env.LISTEN_NOTES_API_KEY;
 const LISTEN_NOTES_ENDPOINT = "https://listen-api-test.listennotes.com/api/v2";
 const ASSEMBLYAI_ENDPOINT = "https://api.assemblyai.com/v2";
 
-async function queryPodcasts(query: string): Promise<SearchResponse> {
+async function searchPodcast(query: string): Promise<SearchResponse> {
   if (LISTEN_NOTES_API_KEY === undefined) {
     throw new Error("ListenNotes API Key missing from .env file");
   }
@@ -67,7 +67,7 @@ interface PodcastDetail {
   listen_score_global_rank: string;
 }
 
-async function queryTranscription(source: string): Promise<SubmissionResponse> {
+async function queueAudio(source: string): Promise<TranscriptResponse> {
   if (ASSEMBLYAI_API_KEY === undefined) {
     throw new Error("AssemblyAI API Key missing from .env file");
   }
@@ -83,12 +83,12 @@ async function queryTranscription(source: string): Promise<SubmissionResponse> {
     }),
   });
 
-  const submission: SubmissionResponse =
-    (await res.json()) as SubmissionResponse;
-  const id: string = submission.id;
+  return (await res.json()) as TranscriptResponse;
+}
 
-  let status: "queued" | "completed" | "processing" = submission.status;
-  let transcript: SubmissionResponse = submission;
+async function fetchTranscript(id: string): Promise<TranscriptResponse> {
+  let status: "queued" | "completed" | "processing" = "processing";
+  let transcript: TranscriptResponse;
 
   return await new Promise((resolve) => {
     const intv = setInterval(async () => {
@@ -98,12 +98,13 @@ async function queryTranscription(source: string): Promise<SubmissionResponse> {
       if (status !== "processing") {
         clearInterval(intv);
       }
+
       resolve(transcript);
     }, 5000);
   });
 }
 
-async function fetchTranscriptResult(id: string): Promise<SubmissionResponse> {
+async function fetchTranscriptResult(id: string): Promise<TranscriptResponse> {
   if (ASSEMBLYAI_API_KEY === undefined) {
     throw new Error("AssemblyAI API Key missing from .env file");
   }
@@ -115,12 +116,12 @@ async function fetchTranscriptResult(id: string): Promise<SubmissionResponse> {
     },
   });
 
-  const transcript = (await res.json()) as SubmissionResponse;
+  const transcript = (await res.json()) as TranscriptResponse;
 
   return transcript;
 }
 
-interface SubmissionResponse {
+interface TranscriptResponse {
   id: string;
   status: "queued" | "processing" | "completed";
   acoustic_model: string;
@@ -142,10 +143,11 @@ interface Word {
 }
 
 async function main() {
-  const podcasts = await queryPodcasts("women%20in%20tech");
+  const podcasts = await searchPodcast("women%20in%20tech");
   const audio = podcasts.results[0].audio;
 
-  const transcript = await queryTranscription(audio);
+  const submission = await queueAudio(audio);
+  const transcript = await fetchTranscript(submission.id);
 }
 
 main();
