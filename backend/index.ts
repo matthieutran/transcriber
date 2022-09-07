@@ -1,4 +1,4 @@
-import fetch, { Headers } from "node-fetch";
+import fetch from "node-fetch";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -95,7 +95,7 @@ async function queryTranscription(source: string): Promise<SubmissionResponse> {
       transcript = await fetchTranscriptResult(id);
       status = transcript.status;
 
-      if (status !== "queued") {
+      if (status !== "processing") {
         clearInterval(intv);
       }
       resolve(transcript);
@@ -146,7 +146,6 @@ async function main() {
   const audio = podcasts.results[0].audio;
 
   const transcript = await queryTranscription(audio);
-  console.log(transcript.id);
 }
 
 main();
