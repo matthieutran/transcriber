@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.js",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "dev": "npm run lint && npm run build && npm run start",
     "start": "node ./dist/index.js",
@@ -22,13 +22,12 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^18.7.15",
+    "podcast-api": "^1.1.4",
     "tslint": "^6.1.3",
     "typescript": "^4.8.2"
   },
   "dependencies": {
-    "@types/isomorphic-fetch": "^0.0.36",
     "dotenv": "^16.0.2",
-    "isomorphic-fetch": "^3.0.0",
-    "podcast-api": "^1.1.4"
+    "node-fetch": "^3.2.10"
   }
 }

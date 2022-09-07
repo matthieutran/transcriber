@@ -1,31 +1,27 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const dotenv = __importStar(require("dotenv"));
+import fetch, { Headers } from "node-fetch";
+import dotenv from "dotenv";
 dotenv.config();
 const ASSEMBLYAI_API_KEY = process.env.ASSEMBLYAI_API_KEY;
 const LISTEN_NOTES_API_KEY = process.env.LISTEN_NOTES_API_KEY;
-console.log(ASSEMBLYAI_API_KEY, LISTEN_NOTES_API_KEY);
+if (LISTEN_NOTES_API_KEY === undefined) {
+    throw new Error("ListenNotes API Key missing from .env file");
+}
+if (ASSEMBLYAI_API_KEY === undefined) {
+    throw new Error("AssemblyAI API Key missing from .env file");
+}
+const LISTEN_NOTES_ENDPOINT = "https://listen-api-test.listennotes.com/api/v2";
+const headers = new Headers();
+headers.set("X-ListenAPI-Key", LISTEN_NOTES_API_KEY);
+async function queryPodcasts(query) {
+    const res = await fetch(`${LISTEN_NOTES_ENDPOINT}/search?q=${query}&type=podcast`, {
+        headers,
+    });
+    const podcasts = (await res.json());
+    return podcasts;
+}
+async function main() {
+    const podcasts = await queryPodcasts("women%20in%20tech");
+    console.log(podcasts.results[0].id);
+}
+main();
 //# sourceMappingURL=index.js.map
