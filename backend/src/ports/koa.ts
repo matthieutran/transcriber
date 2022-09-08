@@ -1,4 +1,5 @@
 import Koa from "koa";
+import bodyParser from "koa-bodyparser";
 import cors from "@koa/cors";
 import Router from "@koa/router";
 
@@ -10,6 +11,7 @@ export async function startHTTP(
   const koa = new Koa();
 
   koa.use(cors({ origin: "*" }));
+  koa.use(bodyParser());
   koa.use(router.routes());
 
   koa.listen(port, hostname, () => {

@@ -12,7 +12,7 @@ const LISTEN_NOTES_ENDPOINT = "https://listen-api-test.listennotes.com/api/v2";
 const ASSEMBLYAI_ENDPOINT = "https://api.assemblyai.com/v2";
 
 const HOST = "127.0.0.1";
-const PORT = 3000;
+const PORT = 8080;
 
 async function main() {
   const router = createRouter();

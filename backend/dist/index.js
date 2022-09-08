@@ -21,7 +21,7 @@ const LISTEN_NOTES_API_KEY = process.env.LISTEN_NOTES_API_KEY;
 const LISTEN_NOTES_ENDPOINT = "https://listen-api-test.listennotes.com/api/v2";
 const ASSEMBLYAI_ENDPOINT = "https://api.assemblyai.com/v2";
 const HOST = "127.0.0.1";
-const PORT = 3000;
+const PORT = 8080;
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const router = (0, koa_router_1.createRouter)();

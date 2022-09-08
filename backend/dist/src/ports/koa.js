@@ -14,11 +14,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.startHTTP = void 0;
 const koa_1 = __importDefault(require("koa"));
+const koa_bodyparser_1 = __importDefault(require("koa-bodyparser"));
 const cors_1 = __importDefault(require("@koa/cors"));
 function startHTTP(port, hostname, router) {
     return __awaiter(this, void 0, void 0, function* () {
         const koa = new koa_1.default();
         koa.use((0, cors_1.default)({ origin: "*" }));
+        koa.use((0, koa_bodyparser_1.default)());
         koa.use(router.routes());
         koa.listen(port, hostname, () => {
             console.log(`HTTP Server running on http://${hostname}:${port}`);
